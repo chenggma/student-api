@@ -1,7 +1,10 @@
 package com.guicheng.student_api.service;
 
+import com.guicheng.student_api.dto.StudentRequest;
+import com.guicheng.student_api.dto.StudentResponse;
 import com.guicheng.student_api.entity.Student;
 import com.guicheng.student_api.exception.ResourceNotFoundException;
+import com.guicheng.student_api.mapper.StudentMapper;
 import com.guicheng.student_api.repository.StudentRepository;
 import org.springframework.stereotype.Service;
 
@@ -15,31 +18,42 @@ public class StudentService {
         this.studentRepository = studentRepository;
     }
 
-    public Student getById(Long id) {
+    private Student findStudent(Long id) {
         return studentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Student not found with id " + id));
     }
 
-    public List<Student> getAll() {
-        return studentRepository.findAll();
+    public StudentResponse getById(Long id) {
+        Student student = findStudent(id);
+        return StudentMapper.toResponse(student);
     }
 
-    public Student create(Student student) {
-        return studentRepository.save(student);
+    public List<StudentResponse> getAll() {
+        return studentRepository.findAll()
+                .stream()
+                .map(StudentMapper::toResponse)
+                .toList();
     }
 
-    public Student update(Long id, Student student) {
-        Student existing = getById(id);
+    public StudentResponse create(StudentRequest request) {
+        Student student = StudentMapper.toEntity(request);
+        Student saved = studentRepository.save(student);
+        return StudentMapper.toResponse(saved);
+    }
 
-        existing.setFirstName(student.getFirstName());
-        existing.setLastName(student.getLastName());
-        existing.setEmail(student.getEmail());
+    public StudentResponse update(Long id, StudentRequest request) {
+        Student existing = findStudent(id);
 
-        return studentRepository.save(existing);
+        existing.setFirstName(request.getFirstName());
+        existing.setLastName(request.getLastName());
+        existing.setEmail(request.getEmail());
+
+        Student saved = studentRepository.save(existing);
+        return StudentMapper.toResponse(saved);
     }
 
     public void delete(Long id) {
-        Student existing = getById(id);
+        Student existing = findStudent(id);
         studentRepository.delete(existing);
     }
 }

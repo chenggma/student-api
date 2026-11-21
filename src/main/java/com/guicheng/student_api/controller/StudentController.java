@@ -1,6 +1,7 @@
 package com.guicheng.student_api.controller;
 
-import com.guicheng.student_api.entity.Student;
+import com.guicheng.student_api.dto.StudentRequest;
+import com.guicheng.student_api.dto.StudentResponse;
 import com.guicheng.student_api.service.StudentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,13 +20,13 @@ public class StudentController {
     }
 
     @PostMapping
-    public ResponseEntity<Student> create(@RequestBody Student student) {
-        Student saved = studentService.create(student);
+    public ResponseEntity<StudentResponse> create(@RequestBody StudentRequest request) {
+        StudentResponse saved = studentService.create(request);
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public Student getById(@PathVariable Long id) {
+    public StudentResponse getById(@PathVariable Long id) {
         return studentService.getById(id);
     }
 
@@ -35,13 +36,13 @@ public class StudentController {
     }
 
     @GetMapping
-    public List<Student> getAll() {
+    public List<StudentResponse> getAll() {
         return studentService.getAll();
     }
 
     @PutMapping("/{id}")
-    public Student update(@PathVariable Long id, @RequestBody Student student) {
-        return studentService.update(id, student);
+    public StudentResponse update(@PathVariable Long id, @RequestBody StudentRequest request) {
+        return studentService.update(id, request);
     }
 
     @DeleteMapping("/{id}")

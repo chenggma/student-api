@@ -6,6 +6,7 @@ import com.guicheng.student_api.entity.Student;
 import com.guicheng.student_api.exception.ResourceNotFoundException;
 import com.guicheng.student_api.mapper.StudentMapper;
 import com.guicheng.student_api.repository.StudentRepository;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,9 +21,11 @@ import java.util.List;
 @Service
 public class StudentService {
     private final StudentRepository studentRepository;
+    private final AuditService auditService;
 
-    public StudentService (StudentRepository studentRepository){
+    public StudentService (StudentRepository studentRepository, AuditService auditService){
         this.studentRepository = studentRepository;
+        this.auditService = auditService;
     }
 
     private Student findStudent(Long id) {
@@ -77,8 +80,9 @@ public class StudentService {
         studentRepository.delete(existing);
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public List<StudentResponse> createAll(List<StudentRequest> requests) {
+        auditService.log("Batch create requested: " + requests.size() + " students");
         List<StudentResponse> result = new ArrayList<>();
         for (StudentRequest request : requests) {
             result.add(create(request));

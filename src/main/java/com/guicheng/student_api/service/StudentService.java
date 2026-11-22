@@ -6,8 +6,12 @@ import com.guicheng.student_api.entity.Student;
 import com.guicheng.student_api.exception.ResourceNotFoundException;
 import com.guicheng.student_api.mapper.StudentMapper;
 import com.guicheng.student_api.repository.StudentRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 @Service
@@ -28,8 +32,21 @@ public class StudentService {
         return StudentMapper.toResponse(student);
     }
 
-    public List<StudentResponse> getAll() {
-        return studentRepository.findAll()
+    public List<StudentResponse> getAll(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id"));
+        Page<Student> result = studentRepository.findAll(pageable);
+        return result.getContent()
+                .stream()
+                .map(StudentMapper::toResponse)
+                .toList();
+    }
+
+    public long count() {
+        return studentRepository.count();
+    }
+
+    public List<StudentResponse> searchByLastName(String lastName) {
+        return studentRepository.findByLastNameIgnoreCase(lastName)
                 .stream()
                 .map(StudentMapper::toResponse)
                 .toList();

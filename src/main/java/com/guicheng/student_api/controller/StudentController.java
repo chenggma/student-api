@@ -32,13 +32,19 @@ public class StudentController {
     }
 
     @GetMapping("/count")
-    public int getCount() {
-        return studentService.getAll().size();
+    public long getCount() {
+        return studentService.count();
     }
 
     @GetMapping
-    public List<StudentResponse> getAll() {
-        return studentService.getAll();
+    public List<StudentResponse> getAll(
+            @RequestParam(required = false) String lastName,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        if (lastName != null) {
+            return studentService.searchByLastName(lastName);
+        }
+        return studentService.getAll(page, size);
     }
 
     @PutMapping("/{id}")

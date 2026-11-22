@@ -3,6 +3,7 @@ package com.guicheng.student_api.controller;
 import com.guicheng.student_api.dto.StudentRequest;
 import com.guicheng.student_api.dto.StudentResponse;
 import com.guicheng.student_api.service.StudentService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,7 @@ public class StudentController {
     }
 
     @PostMapping
-    public ResponseEntity<StudentResponse> create(@RequestBody StudentRequest request) {
+    public ResponseEntity<StudentResponse> create(@Valid @RequestBody StudentRequest request) {
         StudentResponse saved = studentService.create(request);
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
@@ -41,7 +42,7 @@ public class StudentController {
     }
 
     @PutMapping("/{id}")
-    public StudentResponse update(@PathVariable Long id, @RequestBody StudentRequest request) {
+    public StudentResponse update(@PathVariable Long id, @Valid @RequestBody StudentRequest request) {
         return studentService.update(id, request);
     }
 

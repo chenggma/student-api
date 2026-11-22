@@ -1,8 +1,16 @@
 package com.guicheng.student_api.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+
 public class StudentRequest {
+
+    @NotBlank(message = "First name is required")
     private String firstName;
+    @NotBlank(message = "Last name is required")
     private String lastName;
+    @NotBlank(message = "must be a well-formed email address")
+    @Email
     private String email;
 
     public String getFirstName() {
